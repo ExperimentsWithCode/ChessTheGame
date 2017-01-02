@@ -1,5 +1,6 @@
 require_relative "piece.rb"
 
+
 class CantMoveWhatsNotThere < StandardError
 end
 class NotYourPiece < StandardError
@@ -19,6 +20,11 @@ class Board
   def [](pos)
     row, col = pos
     @grid[row][col]
+  end
+
+  def in_bounds?(pos)
+    return true if self[pos]
+    false
   end
 
   def move_piece(start_pos, end_pos)
@@ -79,13 +85,12 @@ class Board
       Knight.new(color_flag),
       Rook.new(color_flag),
     ]
-    outer_row.reverse! unless color_flag
     outer_row
   end
 
   def generate_nul_row()
     null_row = []
-    8.times { null_row << NullPiece }
+    8.times { null_row << NullPiece.instance }
     null_row
   end
 end

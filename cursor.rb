@@ -1,5 +1,9 @@
 require "io/console"
 
+
+class OutOfBounds < StandardError
+end
+
 KEYMAP = {
   " " => :space,
   "h" => :left,
@@ -40,8 +44,13 @@ class Cursor
   end
 
   def get_input
-    key = KEYMAP[read_char]
-    handle_key(key)
+    begin
+      key = KEYMAP[read_char]
+      handle_key(key)
+    rescue OutOfBounds => e
+      puts e.message
+      retry
+    end
   end
 
   private
@@ -76,8 +85,26 @@ class Cursor
   end
 
   def handle_key(key)
+    ## call update_pos
+    ## return cursor pos
+    case key
+    when :return || :space
+      return cursor_pos
+    when :left || :right || :up || :down
+      update_pos(MOVES[key])
+    when :ctrl_c
+      Process.exit
+    end
+    nil
   end
 
   def update_pos(diff)
+    new_pos = [cursor_pos[0]-diff[0], cursor_pos[1]-diff[1]]
+    if board.in_bounds?(new_pos)
+      cursor_pos = new_pos
+    else
+      raise OutOfBounds.new("Your cursor is off the board")
+    end
   end
+
 end
