@@ -23,6 +23,7 @@ class Board
   end
 
   def in_bounds?(pos)
+    return false if pos[0] < 0 || pos[1] < 0
     return true if self[pos]
     false
   end
