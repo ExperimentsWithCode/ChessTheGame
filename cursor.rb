@@ -1,5 +1,5 @@
 require "io/console"
-
+require 'byebug'
 
 class OutOfBounds < StandardError
 end
@@ -36,7 +36,8 @@ MOVES = {
 
 class Cursor
 
-  attr_reader :cursor_pos, :board
+  attr_accessor :cursor_pos
+  attr_reader :board
 
   def initialize(cursor_pos, board)
     @cursor_pos = cursor_pos
@@ -88,9 +89,9 @@ class Cursor
     ## call update_pos
     ## return cursor pos
     case key
-    when :return || :space
+    when :return , :space
       return cursor_pos
-    when :left || :right || :up || :down
+    when :left , :right , :up , :down
       update_pos(MOVES[key])
     when :ctrl_c
       Process.exit
@@ -99,9 +100,9 @@ class Cursor
   end
 
   def update_pos(diff)
-    new_pos = [cursor_pos[0]-diff[0], cursor_pos[1]-diff[1]]
+    new_pos = [cursor_pos[0]+diff[0], cursor_pos[1]+diff[1]]
     if board.in_bounds?(new_pos)
-      cursor_pos = new_pos
+      self.cursor_pos = new_pos
     else
       raise OutOfBounds.new("Your cursor is off the board")
     end

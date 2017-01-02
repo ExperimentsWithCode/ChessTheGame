@@ -4,13 +4,24 @@ require "colorize"
 
 
 class Display
-  attr_reader :board
+  attr_reader :board, :cursor
 
   def initialize(board = nil)
     board ||= Board.new
     @board = board
     @cursor = Cursor.new([0,0], board)
   end
+
+  def interactive_display
+    infinity = true
+    while infinity
+      system('clear')
+      render
+      puts "\n"  #break between boards
+      cursor.get_input
+    end
+  end
+
 
   def render
     rendered_board = "|"
@@ -30,8 +41,9 @@ class Display
   end
 
   def square_color(pos)
+    colors = [{:background => :light_white}, {:background => :light_black}, {:background => :light_blue}]
+    return colors[2] if pos == cursor.cursor_pos
     row, col = pos
-    colors = [{:background => :light_white}, {:background => :light_black}]
     ## if row and col are even => white
     if row % 2 == 0 && col % 2 == 0
       colors[0]
@@ -44,7 +56,9 @@ class Display
     end
   end
 
+end
 
-
-
+if __FILE__ == $0
+  d = Display.new
+  d.interactive_display
 end
