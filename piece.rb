@@ -1,43 +1,18 @@
 require 'singleton'
 require 'colorize'
-require_relative "piece_pawn.rb"
-
-class Piece
-
-  attr_accessor :current_pos
-  attr_reader :color, :board
-
-  def initialize(color_flag, pos, board)
-    @color = color_flag ? :white : :black
-    @current_pos = pos
-    @board = board
-  end
-
-  def to_s
-    if self.class == King || self.class == Queen
-      self.class.to_s.upcase[0]
-    else
-      self.class.to_s.downcase[0]
-    end
-  end
-
-  def update_pos(new_pos)
-    self.current_pos = new_pos
-  end
-end
 
 module Movements
-  def slide(deltas)
+  def check_moves(deltas)
     possible_positions = []
     deltas.each do |delta|
       out_of_space = false
-      possible_positions.concat(slide_valid_moves(self.current_pos, delta))
+      possible_positions.concat(valid_moves(self.current_pos, delta))
     end
     possible_positions
   end
 
 
-  def slide_valid_moves(current_pos, delta)
+  def valid_moves(current_pos, delta)
     pos = [current_pos[0] + delta[0], current_pos[1] + delta[1]]
     if board.in_bounds?(pos)
       unless board[pos].class == NullPiece
@@ -51,7 +26,8 @@ module Movements
         end
       else
         ## hit a NullPiece
-        return [pos] + slide_valid_moves(pos, delta)
+        return [pos] if self.is_a?(Knight) || self.is_a?(King)
+        return [pos] + valid_moves(pos, delta)
       end
     else
       ## hit out of bounds
@@ -63,11 +39,36 @@ module Movements
   def step(deltas)
 
   end
+end
 
+class Piece
 
+  attr_accessor :current_pos
+  attr_reader :color, :board
 
+  def initialize(color_flag, pos, board)
+    @color = color_flag ? :white : :black
+    @current_pos = pos
+    @board = board
+  end
+
+  include Movements
+
+  def to_s
+    if self.class == King || self.class == Queen
+      self.class.to_s.upcase[0]
+    else
+      self.class.to_s.downcase[0]
+    end
+  end
+
+  def update_pos(new_pos)
+    self.current_pos = new_pos
+  end
 
 end
+
+
 class NullPiece < Piece
   include Singleton
   def initialize
@@ -83,9 +84,8 @@ class Rook < Piece
     [1, 0],
     [-1, 0]
   ]
-  include Movements
-  def move
-    slide(DELTAS)
+  def moves
+    check_moves(DELTAS)
   end
 
 end
@@ -101,6 +101,9 @@ class Knight < Piece
   [-1, 2],
   [1, 2]
   ]
+  def moves
+    check_moves(DELTAS)
+  end
 end
 
 class Bishop < Piece
@@ -110,9 +113,8 @@ class Bishop < Piece
     [-1, -1],
     [-1, 1]
   ]
-  include Movements
-  def move
-    slide(DELTAS)
+  def moves
+    check_moves(DELTAS)
   end
 end
 
@@ -128,13 +130,25 @@ class Queen < Piece
     [-1, 1]
   ]
 
-  include Movements
-  def move
-    slide(DELTAS)
+  def moves
+    check_moves(DELTAS)
   end
 end
 
 class King < Piece
+  DELTAS = [
+    [0, 1],
+    [0, -1],
+    [1, 0],
+    [-1, 0],
+    [1, 1],
+    [1, -1],
+    [-1, -1],
+    [-1, 1]
+  ]
+  def moves
+    check_moves(DELTAS)
+  end
 end
 
 

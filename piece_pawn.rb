@@ -4,14 +4,14 @@ require 'byebug'
 
 
 
-module PawnMovement
+module PawnMovements
 
   def start_step
     if current_pos[0] == 1 || current_pos[0] == 6
       shift = color == :white ? 2 : -2
       in_between = color == :white ? 1 : -1
       new_pos = [current_pos[0] + shift, current_pos[1]]
-      debugger
+      #debugger
       return [] unless board.in_bounds?(new_pos)
       in_between_pos = [current_pos[0] + in_between, current_pos[1]]
       if board[new_pos].is_a?(NullPiece) && board[in_between_pos].is_a?(NullPiece)
@@ -46,13 +46,21 @@ module PawnMovement
 end
 
 
+
+
 class Pawn < Piece
 
-  include PawnMovement
+  include PawnMovements
+
+  def moves
+    potential_moves = []
+    potential_moves.concat(self.start_step)
+    potential_moves.concat(self.standard_step)
+    self.attack_step.each { |move| potential_moves.concat(move)}
+    potential_moves
+  end
 
 end
-
-
 
 
 
