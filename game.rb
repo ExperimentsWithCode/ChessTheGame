@@ -18,11 +18,13 @@ class Game
 
   def play
     current_player = player_1
+    switch = true
     until board.in_checkmate?(current_player.color)
-      current_player.play_turn
+      current_player.play_turn if switch
       selected_pos = display.interactive_display
       switch = handle_selected_pos(current_player, selected_pos)
       current_player = switch_current_player(current_player) if switch
+      debugger if board.in_check?(current_player.color)
     end
   end
 
@@ -60,6 +62,7 @@ class Game
         return true
       end
     end
+    false
   end
 
   def check_selection?(pos, player_color)

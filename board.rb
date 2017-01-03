@@ -61,7 +61,6 @@ class Board
       piece.update_pos(original_pos)
     end
     valid_moves
-
   end
 
   def in_check?(color, king_pos = nil)
@@ -78,10 +77,22 @@ class Board
   end
 
 
+
   def in_checkmate?(color)
     king_pos = get_king_pos(color)
     return false unless in_check?(color, king_pos)
-    self[king_pos].moves.each { |king_escape| return false unless in_check?(color, king_escape) }
+    #self[king_pos].moves.each { |king_escape| return false unless in_check?(color, king_escape) }
+    grid.each do |row|
+      row.each do |piece|
+        unless piece.is_a?(NullPiece)
+          if piece.color == color
+            unless valid_moves(piece).empty?
+              return false
+            end
+          end
+        end
+      end
+    end
     puts "Oh so you think you're special, fine you win"
     true
   end
