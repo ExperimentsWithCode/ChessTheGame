@@ -47,11 +47,12 @@ class Cursor
   def get_input
     begin
       key = KEYMAP[read_char]
-      handle_key(key)
+      selected_pos = handle_key(key)
     rescue OutOfBounds => e
       puts e.message
       retry
     end
+    selected_pos
   end
 
   private

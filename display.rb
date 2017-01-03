@@ -5,11 +5,13 @@ require "colorize"
 
 class Display
   attr_reader :board, :cursor
+  attr_accessor :selected_piece
 
   def initialize(board = nil)
     board ||= Board.new
     @board = board
     @cursor = Cursor.new([0,0], board)
+    @selected_piece = nil
   end
 
   def interactive_display
@@ -19,10 +21,14 @@ class Display
       render
       #break between boards
       puts "\n"
-      cursor.get_input
+      selected_pos = cursor.get_input
+      return selected_pos unless selected_pos.nil?
     end
   end
 
+  def set_selected_piece(piece)
+    self.selected_piece = piece
+  end
 
   def render
     rendered_board = "|"
@@ -42,8 +48,9 @@ class Display
   end
 
   def square_color(pos)
-    colors = [{:background => :light_white}, {:background => :light_black}, {:background => :light_blue}]
+    colors = [{:background => :light_white}, {:background => :light_black}, {:background => :light_blue}, {:background => :light_green}]
     return colors[2] if pos == cursor.cursor_pos
+    return colors[3] if board[pos] == selected_piece
     row, col = pos
     ## if row and col are even => white
     if row % 2 == 0 && col % 2 == 0
