@@ -14,10 +14,11 @@ class Display
     @selected_piece = nil
   end
 
-  def interactive_display
+  def interactive_display(&prc)
     infinity = true
     while infinity
       system('clear')
+      prc.call()
       render
       #break between boards
       puts "\n"
@@ -30,27 +31,32 @@ class Display
     self.selected_piece = piece
   end
 
+  private
+
   def render
-    rendered_board = "|"
+    rendered_board = ""
     board.grid.each_index do |row|
       board.grid[row].each_index do |col|
         piece = board[[row, col]]
         unless piece.class == NullPiece
           rendered_board << piece.to_s.colorize({:color => piece.color}.merge( square_color([row,col]) ) )
         else
-          rendered_board << " ".colorize(square_color([row,col]))
+          rendered_board << "   ".colorize(square_color([row,col]))
         end
-        rendered_board << "|"
+        #rendered_board << "|"
       end
-      rendered_board << "\n|"
+      rendered_board << "\n"
     end
     puts rendered_board[0...-1]
   end
 
   def square_color(pos)
-    colors = [{:background => :light_white}, {:background => :light_black}, {:background => :light_yellow}, {:background => :light_green}]
+    colors = [{:background => :light_white}, {:background => :light_black}, {:background => :light_yellow}, {:background => :light_green},{:background => :light_red}]
     return colors[3] if board[pos] == selected_piece
     return colors[2] if pos == cursor.cursor_pos
+    unless selected_piece.nil?
+      return colors[4] if board.valid_moves(selected_piece).include?(pos)
+    end
     row, col = pos
     ## if row and col are even => white
     if row % 2 == 0 && col % 2 == 0
