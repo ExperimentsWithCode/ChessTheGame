@@ -17,7 +17,8 @@ class Display
     while infinity
       system('clear')
       render
-      puts "\n"  #break between boards
+      #break between boards
+      puts "\n"
       cursor.get_input
     end
   end
