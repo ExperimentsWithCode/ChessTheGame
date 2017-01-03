@@ -48,9 +48,9 @@ class Display
   end
 
   def square_color(pos)
-    colors = [{:background => :light_white}, {:background => :light_black}, {:background => :light_blue}, {:background => :light_green}]
-    return colors[2] if pos == cursor.cursor_pos
+    colors = [{:background => :light_white}, {:background => :light_black}, {:background => :light_yellow}, {:background => :light_green}]
     return colors[3] if board[pos] == selected_piece
+    return colors[2] if pos == cursor.cursor_pos
     row, col = pos
     ## if row and col are even => white
     if row % 2 == 0 && col % 2 == 0
