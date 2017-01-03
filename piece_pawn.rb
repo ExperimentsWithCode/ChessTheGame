@@ -2,9 +2,17 @@ require_relative 'piece.rb'
 require 'byebug'
 
 
+class Pawn < Piece
 
+  def moves
+    potential_moves = []
+    potential_moves.concat(start_step)
+    potential_moves.concat(standard_step)
+    attack_step.each { |move| potential_moves.concat(move)}
+    potential_moves
+  end
 
-module PawnMovements
+  private
 
   def start_step
     if current_pos[0] == 1 || current_pos[0] == 6
@@ -42,22 +50,6 @@ module PawnMovements
       end
     end
     possible_positions
-  end
-end
-
-
-
-
-class Pawn < Piece
-
-  include PawnMovements
-
-  def moves
-    potential_moves = []
-    potential_moves.concat(self.start_step)
-    potential_moves.concat(self.standard_step)
-    self.attack_step.each { |move| potential_moves.concat(move)}
-    potential_moves
   end
 
 end

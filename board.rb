@@ -42,13 +42,7 @@ class Board
     self[end_pos].update_pos(end_pos)
   end
 
-  def move_piece_and_save(start_pos, end_pos)
-    place_holder = self[end_pos]
-    self[end_pos] = self[start_pos]
-    self[start_pos] = NullPiece.instance
-    self[end_pos].update_pos(end_pos)
-    place_holder
-  end
+
 
   def valid_moves(piece)
     valid_moves = []
@@ -160,6 +154,14 @@ class Board
         #debugger if piece.is_a?(King) && piece.color == color
       end
     end
+  end
+
+  def move_piece_and_save(start_pos, end_pos)
+    place_holder = self[end_pos]
+    self[end_pos] = self[start_pos]
+    self[start_pos] = NullPiece.instance
+    self[end_pos].update_pos(end_pos)
+    place_holder
   end
 
 

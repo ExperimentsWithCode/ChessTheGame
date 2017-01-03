@@ -18,14 +18,7 @@ class Game
 
   def play
     current_player = player_1
-    switch = true
-    until board.in_checkmate?(current_player.color)
-      current_player.play_turn if switch
-      selected_pos = display.interactive_display
-      switch = handle_selected_pos(current_player, selected_pos)
-      current_player = switch_current_player(current_player) if switch
-      debugger if board.in_check?(current_player.color)
-    end
+    game_loop(current_player, true)
   end
 
   private
@@ -37,6 +30,20 @@ class Game
     player_1
   end
 
+  def game_loop(current_player, switch)
+    until board.in_checkmate?(current_player.color)
+      print_proc = Proc.new { if board.in_check?(current_player.color)
+                    puts "#{current_player.name} you are in check!!!! Callate and Move!"
+                  else
+                    puts "#{current_player.name} make your move"
+                  end
+                  }
+      selected_pos = display.interactive_display(&print_proc)
+      switch = handle_selected_pos(current_player, selected_pos)
+      current_player = switch_current_player(current_player) if switch
+    end
+  end
+
   def handle_selected_pos(current_player, selected_pos)
     piece = board[selected_pos]
     if display.selected_piece.nil? # there is no currently selected_piece
@@ -44,7 +51,6 @@ class Game
         display.set_selected_piece(piece)
       else
         puts "That was not a valid selection"
-        current_player.play_turn
       end
       return false
     else # there is currently selected_piece

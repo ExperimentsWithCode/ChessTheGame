@@ -1,7 +1,42 @@
 require 'singleton'
 require 'colorize'
 
-module Movements
+
+
+class Piece
+
+  attr_accessor :current_pos
+  attr_reader :color, :board
+
+  def initialize(color_flag, pos, board)
+    @color = color_flag ? :white : :black
+    @current_pos = pos
+    @board = board
+  end
+
+
+  def to_s
+    return "  " if self.is_a? NullPiece
+    unicode_rep(self.class,self.color)
+  end
+
+  def update_pos(new_pos)
+    self.current_pos = new_pos
+  end
+
+  private
+
+  def unicode_rep(piece_class, color)
+    unicode_hash = { [King, :white] => "\u2654", [Queen, :white] => "\u2655",
+                      [Rook, :white] => "\u2656", [Knight, :white] => "\u2658",
+                      [Bishop, :white] => "\u2657", [Pawn, :white] => "\u2659",
+                      [King, :black] => "\u265A", [Queen, :black] => "\u265B",
+                      [Rook, :black] => "\u265C", [Knight, :black] => "\u265E",
+                      [Bishop, :black] => "\u265D", [Pawn, :black] => "\u265F"}
+    " #{unicode_hash[[piece_class,color]]} "
+  end
+
+
   def check_moves(deltas)
     possible_positions = []
     deltas.each do |delta|
@@ -33,37 +68,6 @@ module Movements
       ## hit out of bounds
       return [] ## hit out of bounds
     end
-  end
-
-
-  def step(deltas)
-
-  end
-end
-
-class Piece
-
-  attr_accessor :current_pos
-  attr_reader :color, :board
-
-  def initialize(color_flag, pos, board)
-    @color = color_flag ? :white : :black
-    @current_pos = pos
-    @board = board
-  end
-
-  include Movements
-
-  def to_s
-    if self.class == King || self.class == Queen
-      self.class.to_s.upcase[0]
-    else
-      self.class.to_s.downcase[0]
-    end
-  end
-
-  def update_pos(new_pos)
-    self.current_pos = new_pos
   end
 
 end
@@ -149,6 +153,9 @@ class King < Piece
   def moves
     check_moves(DELTAS)
   end
+
+
+
 end
 
 
