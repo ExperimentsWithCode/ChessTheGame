@@ -1,5 +1,6 @@
 require_relative "piece.rb"
-
+require_relative "piece_pawn.rb"
+require 'byebug'
 
 
 class CantMoveWhatsNotThere < StandardError
@@ -18,9 +19,8 @@ class Board
   end
 
   def inspect
-    puts "it's a board and that should be good enough for you"
+    puts "callate papi, it's a board and that should be good enough for you"
   end
-
 
   def [](pos)
     row, col = pos
@@ -41,12 +41,48 @@ class Board
     self[start_pos] = NullPiece.instance
     self[end_pos].update_pos(end_pos)
   end
-# begin
-# rescue NotYourPiece => e
-#   puts "Error: #{e.message}"
-# rescue OffTheBoard =>
-#   puts "Error: #{e.message}"
-# end
+
+  def move_piece_and_save(start_pos, end_pos)
+    place_holder = self[end_pos]
+    self[end_pos] = self[start_pos]
+    self[start_pos] = NullPiece.instance
+    self[end_pos].update_pos(end_pos)
+    place_holder
+  end
+
+  def valid_moves(piece)
+    valid_moves = []
+    original_pos = piece.current_pos
+    piece.moves.each do |move|
+      place_holder = move_piece_and_save(original_pos, move)
+      valid_moves << move unless in_check?(piece.color)
+      self[original_pos] = piece
+      self[move] = place_holder
+      piece.update_pos(original_pos)
+    end
+    valid_moves
+  end
+
+  def in_check?(color, king_pos = nil)
+    opposite_color = color == :white ? :black : :white
+    king_pos ||= get_king_pos(color)
+    grid.each do |row|
+      row.each do |piece|
+        unless piece.is_a?(NullPiece)
+          return true if piece.color == opposite_color && piece.moves.include?(king_pos)
+        end
+      end
+    end
+    false
+  end
+
+
+  def in_checkmate?(color)
+    king_pos = get_king_pos(color)
+    self[king_pos].moves.each { |king_escape| return false unless in_check?(color, king_escape) }
+    true
+  end
+
   private
 
   def []=(pos, piece)
@@ -102,4 +138,16 @@ class Board
     8.times { null_row << NullPiece.instance }
     null_row
   end
+
+  def get_king_pos(color)
+    grid.each do |row|
+      row.each do |piece|
+        return piece.current_pos if piece.is_a?(King) && piece.color == color
+        #debugger if piece.is_a?(King) && piece.color == color
+      end
+    end
+  end
+
+
+
 end
