@@ -19,6 +19,9 @@ class Game
   def play
     current_player = player_1
     game_loop(current_player, true)
+    system('clear')
+    display.render
+    print "WINNER!"
   end
 
   private

@@ -75,23 +75,21 @@ class Board
   def in_checkmate?(color)
     king_pos = get_king_pos(color)
     return false unless in_check?(color, king_pos)
-    #self[king_pos].moves.each { |king_escape| return false unless in_check?(color, king_escape) }
-    grid.each do |row|
-      row.each do |piece|
-        unless piece.is_a?(NullPiece)
-          if piece.color == color
-            unless valid_moves(piece).empty?
-              return false
-            end
-          end
-        end
-      end
-    end
-    puts "Oh so you think you're special, fine you win"
+    grid.each { |row| row.each { |piece| return false unless check_in_checkmate(piece, color) }  }
+    puts "Oh callate papi, you think you're so caliente... you win"
     true
   end
 
   private
+
+  def check_in_checkmate(piece, color)
+    unless piece.is_a?(NullPiece)
+      if piece.color == color
+        return false unless valid_moves(piece).empty?
+      end
+    end
+    true
+  end
 
   def []=(pos, piece)
     row, col = pos
