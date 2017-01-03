@@ -31,8 +31,6 @@ class Display
     self.selected_piece = piece
   end
 
-  private
-
   def render
     rendered_board = ""
     board.grid.each_index do |row|
@@ -49,6 +47,8 @@ class Display
     end
     puts rendered_board[0...-1]
   end
+
+  private
 
   def square_color(pos)
     colors = [{:background => :light_white}, {:background => :light_black}, {:background => :light_yellow}, {:background => :light_green},{:background => :light_red}]
