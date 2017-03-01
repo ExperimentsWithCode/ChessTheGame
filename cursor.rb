@@ -35,7 +35,6 @@ MOVES = {
 }
 
 class Cursor
-
   attr_accessor :cursor_pos
   attr_reader :board
 
@@ -87,8 +86,6 @@ class Cursor
   end
 
   def handle_key(key)
-    ## call update_pos
-    ## return cursor pos
     case key
     when :return , :space
       return cursor_pos
@@ -108,5 +105,4 @@ class Cursor
       raise OutOfBounds.new("Your cursor is off the board")
     end
   end
-
 end

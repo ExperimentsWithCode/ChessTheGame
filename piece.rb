@@ -41,36 +41,32 @@ class Piece
     possible_positions = []
     deltas.each do |delta|
       out_of_space = false
-      possible_positions.concat(valid_moves(self.current_pos, delta))
+      possible_positions.concat(check_for_valid_moves(self.current_pos, delta))
     end
     possible_positions
   end
 
 
-  def valid_moves(current_pos, delta)
+  def check_for_valid_moves(current_pos, delta)
     pos = [current_pos[0] + delta[0], current_pos[1] + delta[1]]
     if board.in_bounds?(pos)
-      unless board[pos].class == NullPiece
-
-        if board[pos].color == self.color
-          ## hit own piece
-          return []
-        else
-          ## hit opponent piece
-          return [pos]
-        end
-      else
-        ## hit a NullPiece
-        return [pos] if self.is_a?(Knight) || self.is_a?(King)
-        return [pos] + valid_moves(pos, delta)
-      end
-    else
-      ## hit out of bounds
-      return [] ## hit out of bounds
+      on_board_valid_moves(pos, delta)
+    else ## hit out of bounds
+      return []
     end
   end
 
+  def on_board_valid_moves(pos, delta)
+    unless board[pos].class == NullPiece
+      return [] if board[pos].color == self.color ## hit own piece
+      return [pos] ## hit opponent piece
+    else ## hit a NullPiece
+      return [pos] if self.is_a?(Knight) || self.is_a?(King)
+      return [pos] + check_for_valid_moves(pos, delta) # Moves continuously in this direction
+    end
+  end
 end
+
 
 
 class NullPiece < Piece
@@ -82,6 +78,7 @@ end
 
 
 class Rook < Piece
+  # Recursively checks each Delta. 
   DELTAS = [
     [0, 1],
     [0, -1],
@@ -91,7 +88,6 @@ class Rook < Piece
   def moves
     check_moves(DELTAS)
   end
-
 end
 
 class Knight < Piece
@@ -111,6 +107,7 @@ class Knight < Piece
 end
 
 class Bishop < Piece
+  # Recursively checks each Delta.
   DELTAS = [
     [1, 1],
     [1, -1],
@@ -123,6 +120,7 @@ class Bishop < Piece
 end
 
 class Queen < Piece
+  # Recursively checks each Delta.
   DELTAS = [
     [0, 1],
     [0, -1],
@@ -153,11 +151,4 @@ class King < Piece
   def moves
     check_moves(DELTAS)
   end
-
-
-
 end
-
-
-### List of possible DELTAS
-### move is specialize

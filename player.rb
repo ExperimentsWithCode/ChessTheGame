@@ -5,5 +5,4 @@ attr_reader :name, :color
     @name = name
     @color = color
   end
-
 end
