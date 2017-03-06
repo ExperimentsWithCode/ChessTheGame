@@ -124,8 +124,8 @@ class Board
   end
 
   def generate_outer_row(color_flag)
-    outer_row_pieces = [Rook, Knight, Bishop, Queen,
-                        King, Bishop, Knight, Rook ]
+    outer_row_pieces = [Rook, Knight, Bishop, King,
+                        Queen, Bishop, Knight, Rook ]
     row = color_flag ? 0 : 7
     outer_row = []
     outer_row_pieces.each_with_index do |piece, index|
@@ -156,14 +156,4 @@ class Board
     self[end_pos].update_pos(end_pos)
     place_holder
   end
-end
-
-def move_piece(start_pos, end_pos)
-  piece = [start_pos]
-  if piece.is_a? NullPiece || piece.nil?
-    raise NotYourPiece.new("There is no piece at that position")
-  end
-  self[end_pos] = self[start_pos]
-  self[start_pos] = NullPiece.instance
-  self[end_pos].update_pos(end_pos)
 end
