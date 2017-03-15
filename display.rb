@@ -72,7 +72,7 @@ class Display
       return BG_COLORS[:white]
     elsif row % 2 > 0 && col % 2 > 0 ## if row is even, col is odd => white
       return BG_COLORS[:white]
-    else ## if row and col are not both even,or row is even, col is even
+    else 
       return BG_COLORS[:black]
     end
   end

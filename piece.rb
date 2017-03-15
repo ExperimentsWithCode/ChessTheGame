@@ -58,8 +58,7 @@ class Piece
 
   def on_board_valid_moves(pos, delta)
     unless board[pos].class == NullPiece
-      return [] if board[pos].color == self.color ## hit own piece
-      return [pos] ## hit opponent piece
+      return board[pos].color == self.color ? [] : [pos]
     else ## hit a NullPiece
       return [pos] if self.is_a?(Knight) || self.is_a?(King)
       return [pos] + check_for_valid_moves(pos, delta) # Moves continuously in this direction
@@ -78,7 +77,7 @@ end
 
 
 class Rook < Piece
-  # Recursively checks each Delta. 
+  # Recursively checks each Delta.
   DELTAS = [
     [0, 1],
     [0, -1],
