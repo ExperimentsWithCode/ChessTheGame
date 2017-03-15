@@ -93,6 +93,10 @@ class Game
 end
 
 if __FILE__ == $0
-  g = Game.new("Kyle","Meir")
+  puts "Enter Player 1's name (white)"
+  player1 = gets.chomp
+  puts "Enter Player 2's name (black)"
+  player2 = gets.chomp
+  g = Game.new(player1,player2)
   g.play
 end
