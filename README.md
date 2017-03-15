@@ -28,7 +28,7 @@
 
 ### Gather valid moves through recursion
 
-'''
+```
 def check_for_valid_moves(current_pos, delta)
   pos = [current_pos[0] + delta[0], current_pos[1] + delta[1]]
   if board.in_bounds?(pos)
@@ -46,13 +46,14 @@ def on_board_valid_moves(pos, delta)
     return [pos] + check_for_valid_moves(pos, delta) # Moves continuously in this direction
   end
 end
-'''
+```
 
 By knowing the directional possibilities of a piece, we can determine all possible moves by recursively applying that directional change until collision with the end of the board or another piece.
 
 ### Determine background color
 
-'''
+
+```
 def square_color(pos)
   return BG_COLORS[:selected] if board[pos] == selected_piece
   return BG_COLORS[:cursor] if pos == cursor.cursor_pos
@@ -72,6 +73,7 @@ def default_colors(pos)
     return BG_COLORS[:black]
   end
 end
-'''
+```
+
 
 With a few simple comparisons we can determine the background color of a space on the board.
