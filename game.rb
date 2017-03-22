@@ -84,7 +84,13 @@ class Game
   end
 
   def unavailable_move?(piece, move_pos)
-    piece.moves.include?(move_pos) ? false : true
+    unavailable = piece.moves.include?(move_pos) ? false : true
+    if unavailable && piece.is_a?(King)
+      if board.check_for_castle(piece).include?(move_pos)
+        unavailable = false
+      end
+    end
+    unavailable
   end
 
   def invalid_move?(piece, move_pos)

@@ -9,10 +9,11 @@ class NotYourPiece < StandardError
 end
 
 class Board
-  attr_reader :grid
+  attr_reader :grid, :kings_moved
 
   def initialize
     @grid = []
+    @kings_moved = {black: false, white: false}
     set
   end
 
@@ -27,18 +28,21 @@ class Board
   end
 
   def move_piece(start_pos, end_pos)
-    piece = [start_pos]
+    piece = self[start_pos]
     if piece.is_a? NullPiece || piece.nil?
       raise NotYourPiece.new("There is no piece at that position")
+    elsif piece.is_a?(King)
+      @kings_moved[piece.color] = true
     end
-    self[end_pos] = self[start_pos]
-    self[start_pos] = NullPiece.instance
-    self[end_pos].update_pos(end_pos)
+    move_piece_and_save(start_pos, end_pos)
   end
 
   # Of moves piece can make, find which dont result in self check.
   def valid_moves(piece)
     valid_moves = []
+    if piece.is_a?(King) && ! kings_moved[piece.color]
+      valid_moves.concat(check_for_castle(piece))
+    end
     original_pos = piece.current_pos
     piece.moves.each do |move|
       place_holder = move_piece_and_save(original_pos, move)
@@ -75,6 +79,20 @@ class Board
     end
     puts "You win"
     true
+  end
+
+  def check_for_castle(king)
+    additional_moves = []
+    unless kings_moved[king.color]
+      pos = king.current_pos
+      pos_col =  [0,7]
+      pos_col.each do |col|
+        if self[[pos[0], col]].is_a?(Rook)
+          additional_moves << [pos[0], col] if check_if_castle_route_clear(pos[0], col)
+        end
+      end
+    end
+    additional_moves
   end
 
   private
@@ -150,10 +168,38 @@ class Board
 
   # Move piece and save current location for future
   def move_piece_and_save(start_pos, end_pos)
-    place_holder = self[end_pos]
-    self[end_pos] = self[start_pos]
-    self[start_pos] = NullPiece.instance
-    self[end_pos].update_pos(end_pos)
-    place_holder
+    if self[start_pos].is_a?(King) && (start_pos[1] - end_pos[1]).abs > 1
+      castle(start_pos, end_pos)
+    else
+      place_holder = self[end_pos]
+      self[end_pos] = self[start_pos]
+      self[start_pos] = NullPiece.instance
+      self[end_pos].update_pos(end_pos)
+      place_holder
+    end
+  end
+
+  def castle(king_pos, rook_pos)
+    place_holder = self[rook_pos]
+    self[rook_pos] = self[king_pos]
+    self[king_pos] = place_holder
+    self[rook_pos].update_pos(rook_pos)
+    self[king_pos].update_pos(king_pos)
+  end
+
+
+  def check_if_castle_route_clear(pos, col)
+    move_is_valid = true
+    (col - pos[1]).times do |thru_col|
+      if self[[pos[0], thru_col]].is_a?(NullPiece)
+        king_pos = [pos[0], thru_col]
+        if in_check?(self[[pos[0], thru_col]].color, king_pos = nil)
+          move_is_valid = false
+        end
+      else
+        move_is_valid = false
+      end
+    end
+    move_is_valid
   end
 end

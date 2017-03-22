@@ -20,6 +20,7 @@
 * Two Player
   * Can enter names at start.
 * Cursor Input
+* Castling
 
 ## Game View
 ![Game View](images/chess.gif)
